@@ -18,21 +18,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bernardo.CRUD.entity.Funcionario;
 import com.bernardo.CRUD.repositories.FuncionarioRepository;
+import javax.mail.internet.InternetAddress;
 
 @RestController
-@RequestMapping(value = "/funcionario")
+@RequestMapping(path = "/funcionario")
 public class FuncionarioResource {
 
 	@Autowired
 	private FuncionarioRepository repository;
 
-	@PostMapping
+	@PostMapping(path="/salvar")
 	public ResponseEntity<Funcionario> salvar(@RequestBody Funcionario funcionario) {
-		repository.save(funcionario);
-		return new ResponseEntity<>(funcionario, HttpStatus.OK);
+		try {
+			InternetAddress emailAddr = new InternetAddress(funcionario.getEmail());
+			emailAddr.validate();
+			repository.save(funcionario);
+			return new ResponseEntity<>(funcionario, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
-	@GetMapping
+	@GetMapping(path="/buscar")
 	public ResponseEntity<List<Funcionario>> buscar() {
 		List<Funcionario> funcionario = new ArrayList<>();
 		funcionario = repository.findAll();
@@ -51,14 +59,23 @@ public class FuncionarioResource {
 
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<Funcionario> update(@PathVariable Integer id, @RequestBody Funcionario novoFuncionario) {
-		return repository.findById(id).map(funcionario -> {
-			funcionario.setNome(novoFuncionario.getNome());
-			funcionario.setSobrenome(novoFuncionario.getSobrenome());
-			funcionario.setEmail(novoFuncionario.getEmail());
-			funcionario.setPis(novoFuncionario.getPis());
-			Funcionario funcionarioEditado = repository.save(funcionario);
-			return ResponseEntity.ok().body(funcionarioEditado);
-		}).orElse(ResponseEntity.notFound().build());
+
+		try {
+			InternetAddress emailAddr = new InternetAddress(novoFuncionario.getEmail());
+			emailAddr.validate();
+			return repository.findById(id).map(funcionario -> {
+				funcionario.setNome(novoFuncionario.getNome());
+				funcionario.setSobrenome(novoFuncionario.getSobrenome());
+				funcionario.setEmail(novoFuncionario.getEmail());
+				funcionario.setPis(novoFuncionario.getPis());
+				Funcionario funcionarioEditado = repository.save(funcionario);
+				return ResponseEntity.ok().body(funcionarioEditado);
+			}).orElse(ResponseEntity.notFound().build());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+
 	}
 
 }
