@@ -5,8 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import com.bernardo.CRUD.entity.Funcionario;
-import com.bernardo.CRUD.resources.FuncionarioResource;
+import com.bernardo.CRUD.entity.Employee;
+import com.bernardo.CRUD.resources.EmployeeResource;
 
 @SpringBootApplication
 public class CrudApplication {
@@ -17,16 +17,16 @@ public class CrudApplication {
 	}
 
 	@Bean
-	CommandLineRunner initBase(FuncionarioResource repository) {
+	CommandLineRunner initBase(EmployeeResource repository) {
 		return args -> {
 
-			Funcionario f = new Funcionario();
-			f.setNome("Bernardo");
-			f.setSobrenome("Bortot Spiazzi");
-			//validação de e-mail funcionando
+			Employee f = new Employee();
+			f.setName("Bernardo");
+			f.setLastName("Bortot Spiazzi");
+			// validação de e-mail funcionando
 			f.setEmail("bernardospiazzidv8@gmail.com");
 			f.setPis(12345789L);
-			repository.salvar(f);
+			repository.save(f);
 		};
 	}
 

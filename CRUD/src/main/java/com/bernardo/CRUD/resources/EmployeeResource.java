@@ -16,19 +16,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bernardo.CRUD.entity.Funcionario;
-import com.bernardo.CRUD.repositories.FuncionarioRepository;
+import com.bernardo.CRUD.entity.Employee;
+import com.bernardo.CRUD.repositories.EmployeeRepository;
 import javax.mail.internet.InternetAddress;
 
 @RestController
-@RequestMapping(path = "/funcionario")
-public class FuncionarioResource {
+@RequestMapping(path = "/employee")
+public class EmployeeResource {
 
 	@Autowired
-	private FuncionarioRepository repository;
+	private EmployeeRepository repository;
 
-	@PostMapping(path="/salvar")
-	public ResponseEntity<Funcionario> salvar(@RequestBody Funcionario funcionario) {
+	@PostMapping(path = "/save")
+	public ResponseEntity<Employee> save(@RequestBody Employee funcionario) {
 		try {
 			InternetAddress emailAddr = new InternetAddress(funcionario.getEmail());
 			emailAddr.validate();
@@ -40,36 +40,36 @@ public class FuncionarioResource {
 		return null;
 	}
 
-	@GetMapping(path="/buscar")
-	public ResponseEntity<List<Funcionario>> buscar() {
-		List<Funcionario> funcionario = new ArrayList<>();
+	@GetMapping(path = "/get")
+	public ResponseEntity<List<Employee>> get() {
+		List<Employee> funcionario = new ArrayList<>();
 		funcionario = repository.findAll();
 		return new ResponseEntity<>(funcionario, HttpStatus.OK);
 	}
 
 	@DeleteMapping(path = "/{id}")
-	public ResponseEntity<Optional<Funcionario>> deletarById(@PathVariable Integer id) {
+	public ResponseEntity<Optional<Employee>> deleteById(@PathVariable Integer id) {
 		try {
 			repository.deleteById(id);
-			return new ResponseEntity<Optional<Funcionario>>(HttpStatus.OK);
+			return new ResponseEntity<Optional<Employee>>(HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<Optional<Funcionario>>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Optional<Employee>>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<Funcionario> update(@PathVariable Integer id, @RequestBody Funcionario novoFuncionario) {
+	public ResponseEntity<Employee> update(@PathVariable Integer id, @RequestBody Employee newEmployee) {
 
 		try {
-			InternetAddress emailAddr = new InternetAddress(novoFuncionario.getEmail());
+			InternetAddress emailAddr = new InternetAddress(newEmployee.getEmail());
 			emailAddr.validate();
-			return repository.findById(id).map(funcionario -> {
-				funcionario.setNome(novoFuncionario.getNome());
-				funcionario.setSobrenome(novoFuncionario.getSobrenome());
-				funcionario.setEmail(novoFuncionario.getEmail());
-				funcionario.setPis(novoFuncionario.getPis());
-				Funcionario funcionarioEditado = repository.save(funcionario);
-				return ResponseEntity.ok().body(funcionarioEditado);
+			return repository.findById(id).map(employee -> {
+				employee.setName(newEmployee.getName());
+				employee.setLastName(newEmployee.getLastName());
+				employee.setEmail(newEmployee.getEmail());
+				employee.setPis(newEmployee.getPis());
+				Employee editEmployee = repository.save(employee);
+				return ResponseEntity.ok().body(editEmployee);
 			}).orElse(ResponseEntity.notFound().build());
 		} catch (Exception e) {
 			e.printStackTrace();
